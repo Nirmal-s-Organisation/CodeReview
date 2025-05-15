@@ -1,20 +1,34 @@
-import streamlit as st
-import requests
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
 
-st.title("GitHub Code Review Automation")
+    # Divide the array into two halves
+    mid = len(arr) // 2
+    left_half = merge_sort(arr[:mid])
+    right_half = merge_sort(arr[mid:])
 
-repo_url = st.text_input("Enter GitHub Repository URL")
-access_token = st.text_input("Enter GitHub Access Token", type="password")
+    # Merge the sorted halves
+    return merge(left_half, right_half)
 
-if st.button("Set Up Webhook"):
-    if repo_url and access_token:
-        response = requests.post(
-            "http://localhost:8000/setup-webhook/",
-            json={"repo_url": repo_url, "access_token": access_token}
-        )
-        if response.status_code == 200:
-            st.success("Webhook set up successfully!")
+def merge(left, right):
+    result = []
+    i = j = 0
+
+    # Compare elements from both halves and collect in result
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
         else:
-            st.error(f"Failed to set up webhook: {response.json().get('detail', 'Unknown error')}")
-    else:
-        st.error("Please provide both repository URL and access token.")
+            result.append(right[j])
+            j += 1
+
+    # Append remaining elements, if any
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+# Example usage
+arr = [38, 27, 43, 3, 9, 82, 10]
+sorted_arr = merge_sort(arr)
+print("Sorted array:", sorted_arr)
